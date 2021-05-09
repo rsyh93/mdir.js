@@ -522,12 +522,17 @@ export class MainFrame extends BaseMainFrame implements IHelpService {
         if ( panel instanceof BlessedPanel || panel instanceof BlessedMcd ) {
             const mountList: IMountList[] = await panel.getReader().mountList();
             if ( mountList ) {
-                const maxLength = [ 0, 0, 0 ];
-                mountList.sort( (a, b) => {
-                    maxLength[0] = Math.max( maxLength[0], StringUtils.strWidth(a.mountPath.fullname) );
-                    maxLength[1] = Math.max( maxLength[1], StringUtils.strWidth(a.device) );
-                    maxLength[2] = Math.max( maxLength[2], StringUtils.strWidth(a.description) );
+                const maxLength = mountList.map( ( item ) => [
+                    StringUtils.strWidth( item.mountPath.fullname ),
+                    StringUtils.strWidth( item.device ),
+                    StringUtils.strWidth( item.description )
+                ]).reduce( ( a, b ) => [
+                    Math.max( a[0], b[0] ),
+                    Math.max( a[1], b[1] ),
+                    Math.max( a[2], b[2] ),
+                ]);
 
+                mountList.sort( (a, b) => {
                     if ( a.mountPath.fullname > b.mountPath.fullname ) return 1;
                     if ( b.mountPath.fullname > a.mountPath.fullname ) return -1;
                     return 0;
